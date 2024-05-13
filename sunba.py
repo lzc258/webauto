@@ -16,6 +16,7 @@ browser_config = {'name':'chrome',#选择浏览器名
 url = 'https://tieba.baidu.com/f?kw=%E6%AD%A3%E4%B8%AD%E5%A4%A7%E9%A3%9E%E6%9F%B1&ie=utf-8&pn=0'#输入吧网址
 page = 1#从第几页开始
 n = 99999#循环次数，可以根据需要设置，建议不要太大，防止被封IP
+message = "加三" #水贴内容
 
 driver = launch.get_driver(browser_config)
 driver.get(url)
@@ -54,7 +55,7 @@ while(n):
                 editable_div.click()  # 点击以激活编辑区域
                 style = ele.get_attribute("style")
 
-            editable_div.send_keys("加三")  # 输入文本
+            editable_div.send_keys(message)  # 输入文本
             t=funcs.wait_for_elements(driver, (By.XPATH, "//a[.//em[text()='发 表']]"), 10)
 
             submit_button = driver.find_element(By.XPATH, "//a[.//em[text()='发 表']]")
