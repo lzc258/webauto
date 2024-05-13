@@ -7,13 +7,13 @@ import src.launch as launch
 import src.browser_funcs as funcs
 
 
-browser_config = {'name':'your/browser/name',#选择浏览器名
-                  'port':'your/browser/port',#选择端口。空闲即可
-                  'profile_path' : 'your/profile/path',#用户希望浏览器配置文件的保存路径，该文件创建后，下次启动浏览器时会自动加载该配置文件
-                  'directory_path': 'your/browser/path'#浏览器可执行文件路径
+browser_config = {'name':'chrome',#选择浏览器名
+                  'port':'9222',#选择端口。空闲即可
+                  'profile_path' : 'E:/data/website/chrome_profile',#用户希望浏览器配置文件的保存路径，该文件创建后，下次启动浏览器时会自动加载该配置文件
+                  'directory_path': 'C:/Program Files/Google/Chrome/Application'#浏览器可执行文件路径
                   }
 
-url = 'your/url'#输入吧网址
+url = 'https://tieba.baidu.com/f?kw=%E6%AD%A3%E4%B8%AD%E5%A4%A7%E9%A3%9E%E6%9F%B1&ie=utf-8&pn=0'#输入吧网址
 page = 1#从第几页开始
 n = 99999#循环次数，可以根据需要设置，建议不要太大，防止被封IP
 
