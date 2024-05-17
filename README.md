@@ -19,7 +19,7 @@ pip install selenium
 - browser_name：浏览器名称，目前支持chrome、edge
 - port：调试模式端口号，根据需要更改
 - profile_path ：调试模式会创建新的用户配置文件，这里是希望用户配置文件存放的路径，不同浏览器应放在不同文件夹里
-- directory_path ：浏览器的可执行文件路径
+- directory_path ：浏览器的可执行文件目录路径(不包括可执行文件名)
 
 
 ## 脚本文件
