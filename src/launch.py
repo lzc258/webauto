@@ -12,7 +12,7 @@ from src.browser_config import Config
 
 def get_driver(browser_config_part):
     browser_config = Config().get_browser_config(browser_config_part)
-
+    original_directory = os.getcwd()
     os.chdir(browser_config['directory_path'])
     process = subprocess.Popen(browser_config['command'], shell=True)
     sleep(2)
@@ -34,5 +34,6 @@ def get_driver(browser_config_part):
         driver = webdriver.Edge(options=options)
     else:
         raise ValueError("Invalid browser choice")
+    os.chdir(original_directory)
     return driver
 
