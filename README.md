@@ -30,4 +30,5 @@ pip install selenium
 
 ### 脚本文件介绍
 - sunba.py: 指定某个百度贴吧，进行水贴，需要给定某个吧主页的url，示例:url = "https://tieba.baidu.com/f?ie=utf-8&kw=%E6%9D%8E%E6%AF%85"
+- qiangke.py: 用于在whu信息门户自动选课，需要在程序第一次暂停期间先手动登录并打开目标课程页面，后续敲击终端程序会自动选课
 
