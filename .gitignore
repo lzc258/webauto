@@ -1,0 +1,9 @@
+# Python 生成文件
+__pycache__/
+*.pyc
+
+# 数据文件
+data/
+
+# 个人脚本
+personal_tools/
