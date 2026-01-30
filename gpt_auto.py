@@ -13,8 +13,8 @@ from selenium.webdriver.support import expected_conditions as EC
 driver = launch.get_driver(browser_config,is_handle_login=True)
 wait = WebDriverWait(driver, 30)
 
-INPUT_JSON = "questions.json"
-OUTPUT_JSON = "answers.json"
+INPUT_JSON = "data/questions.json"
+OUTPUT_JSON = "data/answers.json"
 WAIT_TIMEOUT = 120
 SLEEP_BETWEEN_QUESTIONS = 5
 

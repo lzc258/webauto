@@ -1,0 +1,10 @@
+# Python 生成文件
+__pycache__/
+*.pyc
+
+# 数据文件
+data/
+
+
+# 个人工具
+events.py
