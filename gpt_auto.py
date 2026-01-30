@@ -1,5 +1,6 @@
 import browser.launch as launch
 import browser.browser_funcs as funcs
+import browser.log as my_log
 
 from cfg.myconfig import browser_config
 import json
@@ -11,11 +12,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 
+# 启用log
+my_log.start_logging()
+
 INPUT_JSON = "data/questions.json"
 OUTPUT_JSON_WITHOUT = "data/answers"
 WAIT_TIMEOUT = 120
 SLEEP_BETWEEN_QUESTIONS = 5
-BATCH_SIZE = 2
+BATCH_SIZE = 50
 NEW_CHAT_WAIT_TIME = 1
 NEW_PAGE_WAIT_TIME = 20
 driver = launch.get_driver(browser_config,is_handle_login=True)

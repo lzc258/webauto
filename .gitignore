@@ -7,3 +7,9 @@ data/
 
 # 个人脚本
 personal_tools/
+
+# 个人配置
+cfg/
+
+# 运行日志
+log/
