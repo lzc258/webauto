@@ -5,6 +5,5 @@ __pycache__/
 # 数据文件
 data/
 
-
-# 个人工具
-events.py
+# 个人脚本
+personal_tools/

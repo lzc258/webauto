@@ -2,8 +2,8 @@ from selenium.webdriver.common.by import By
 from time import sleep
 import json
 
-import src.launch as launch
-import src.browser_funcs as funcs
+import browser.launch as launch
+import browser.browser_funcs as funcs
 from cfg.myconfig import browser_config
 
 import re
