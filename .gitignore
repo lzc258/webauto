@@ -1,5 +1,5 @@
 # Python 生成文件
-__pycache__/
+browser/__pycache__/
 *.pyc
 
 # 数据文件
