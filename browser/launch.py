@@ -44,3 +44,22 @@ def get_driver(browser_config_part,is_handle_login=True):
     os.chdir(original_directory)
     return driver
 
+def relink_browser(driver,browser_config_part):
+    # 重新连接已打开的浏览器,只有is_handle_login=True时使用
+    browser_config = Config().get_browser_config(browser_config_part)
+    original_directory = os.getcwd()
+    driver.quit()
+    if browser_config['name'] == 'chrome':
+        options = ChromeOptions()
+        os.chdir(browser_config['directory_path'])
+        sleep(2)
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:" + browser_config['port'] )
+        print("start relink...")
+        driver = webdriver.Chrome(options=options)
+        print("relink success")
+    elif browser_config['name'] == 'edge':
+        print("no support for relink edge now, please use chrome")
+    else:
+        raise ValueError("Invalid browser choice")
+    os.chdir(original_directory)
+    return driver
