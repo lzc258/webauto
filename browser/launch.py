@@ -10,7 +10,8 @@ import msvcrt
 from browser.browser_config import Config
 
 
-def get_driver(browser_config_part,is_handle_login=True):
+def get_driver(browser_config_part,is_handle_login=True): 
+    # is_handle_login = True表示使用cmd打开浏览器后有一段时间供用户自由处理登录后供selenium连接，False表示直接使用已有的用户数据配置文件使用selenium启动浏览器，目前False只支持chrome
     browser_config = Config().get_browser_config(browser_config_part)
     original_directory = os.getcwd()
 
