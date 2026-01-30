@@ -15,11 +15,11 @@ from selenium.webdriver.common.action_chains import ActionChains
 # 启用log
 my_log.start_logging()
 
-INPUT_JSON = "data/questions.json"
-OUTPUT_JSON_WITHOUT = "data/answers"
+INPUT_JSON = "data/event_backgrounds_questions.json"
+OUTPUT_JSON_WITHOUT = "data/event_backgrounds_answers/campaigns_answers"
 WAIT_TIMEOUT = 120
 SLEEP_BETWEEN_QUESTIONS = 5
-BATCH_SIZE = 50
+BATCH_SIZE = 30
 NEW_CHAT_WAIT_TIME = 1
 NEW_PAGE_WAIT_TIME = 20
 driver = launch.get_driver(browser_config,is_handle_login=True)
@@ -43,15 +43,19 @@ def get_input_box():
 def send_question(question: str):
     input_box = get_input_box()
     time.sleep(1)
-    # 必须先 click 激活
     input_box.click()
     time.sleep(0.2)
 
-    # ProseMirror 不支持 clear()，用 Ctrl+A + Delete
+    # 清空内容
     input_box.send_keys(Keys.CONTROL, "a")
     input_box.send_keys(Keys.DELETE)
 
-    input_box.send_keys(question)
+    # 分行发送，每行后用 Shift+Enter
+    for line in question.splitlines():
+        input_box.send_keys(line)
+        input_box.send_keys(Keys.SHIFT, Keys.ENTER)
+
+    # 最后回车提交
     input_box.send_keys(Keys.ENTER)
 
 
@@ -101,7 +105,14 @@ def batch_ask(questions, idx_start, batch_size):
     new_chat()
     for idx, item in enumerate(questions, 1):
         global driver
-        driver = launch.relink_browser(driver,browser_config)
+        while True:
+            try:               
+                driver = launch.relink_browser(driver,browser_config)
+                break
+            except Exception as e:
+                print(f"连接失败：{e}")
+                time.sleep(1)  # 等待1秒再重试
+                continue
 
         qid = item.get("id", idx)
         question = item.get("question")
@@ -110,13 +121,13 @@ def batch_ask(questions, idx_start, batch_size):
             continue
 
         print(f"\n[{idx}/{len(questions)}] Asking ID={qid}")
-        print("Q:", question)
+        print(f"Q:{question}")
 
         try:
             send_question(question)
             answer = wait_for_answer(driver,timeout=WAIT_TIMEOUT)
-
-            print("A:", answer[:200], "..." if len(answer) > 200 else "")
+            processed_answer = answer[:200], "..." if len(answer) > 200 else ""
+            print(f"A:{processed_answer}")
 
             results.append({
                 "id": qid,
