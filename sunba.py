@@ -3,15 +3,10 @@ from selenium.webdriver.common.by import By
 
 from time import sleep
 
-import src.launch as launch
-import src.browser_funcs as funcs
+import browser.launch as launch
+import browser.browser_funcs as funcs
 
-
-browser_config = {'name':'your/browser/name',#选择浏览器名
-                  'port':'your/port',#选择端口。空闲即可
-                  'profile_path' : 'your/profile/path',#用户希望浏览器配置文件的保存路径，该文件创建后，下次启动浏览器时会自动加载该配置文件
-                  'directory_path': 'your/browser/path'#浏览器可执行文件路径
-                  }
+from cfg.myconfig import browser_config
 
 url = 'your/url'#输入吧网址
 page = 1#从第几页开始
