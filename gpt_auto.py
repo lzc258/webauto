@@ -9,19 +9,22 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 
 INPUT_JSON = "data/questions.json"
 OUTPUT_JSON_WITHOUT = "data/answers"
 WAIT_TIMEOUT = 120
 SLEEP_BETWEEN_QUESTIONS = 5
 BATCH_SIZE = 2
+NEW_CHAT_WAIT_TIME = 1
+NEW_PAGE_WAIT_TIME = 20
 driver = launch.get_driver(browser_config,is_handle_login=True)
 
 # =========================
 # 页面操作函数
 # =========================
 def get_input_box():
-    wait = WebDriverWait(driver, 30)
+    wait = WebDriverWait(driver, WAIT_TIMEOUT)
     # 等待左侧栏元素出现，保证页面加载完成
     wait.until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "a.group.__menu-item.hoverable"))
@@ -35,7 +38,7 @@ def get_input_box():
 
 def send_question(question: str):
     input_box = get_input_box()
-
+    time.sleep(1)
     # 必须先 click 激活
     input_box.click()
     time.sleep(0.2)
@@ -75,7 +78,14 @@ def wait_for_answer(driver,timeout=120):
 
 
 def new_chat():
-    driver.get("https://chat.openai.com")
+    # 等待元素可见
+    print("Creating new chat...")
+
+    actions = ActionChains(driver)
+    actions.key_down(Keys.CONTROL).key_down(Keys.SHIFT).send_keys('O').key_up(Keys.SHIFT).key_up(Keys.CONTROL).perform()
+    time.sleep(NEW_CHAT_WAIT_TIME)
+    print("Created new chat done.")
+    
     get_input_box()   # 等真正的 ProseMirror 可用
 
 # =========================
@@ -136,18 +146,23 @@ def ask():
     try:
         with open("data/status.json", "r", encoding="utf-8") as f:
             status_info = json.load(f)
-            is_resume = False
+            is_resume = True
             print("Resuming from last status:", status_info)
     except:
-        is_resume = True
+        is_resume = False
         status_info = {}
 
     with open(INPUT_JSON, "r", encoding="utf-8") as f:
         data = json.load(f)
     if is_resume:
+        print("Starting fresh from the beginning.")
         start_index = status_info.get("start", 0)
     else:
         start_index = 0
+    # driver.get("https://chat.openai.com")
+    # time.sleep(NEW_PAGE_WAIT_TIME)  # 等待页面加载,以及手动绕过真人检验
+
+    # 也可以使用手动的方式直接打开openai chat页面，登录后再运行脚本
     for i in range(start_index, len(data), BATCH_SIZE):
         batch_ask(data[i:i+BATCH_SIZE],i,BATCH_SIZE)
 
