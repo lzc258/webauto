@@ -157,7 +157,7 @@ def batch_ask(questions, idx_start, batch_size):
                 json.dump({
                     "start": idx_start + batch_size,
                     }, f, ensure_ascii=False, indent=4, default=str)
-                print(f"Updated status file for batch starting at index {idx_start}")
+                print(f"Updated status file for batch starting at index {idx_start + batch_size}")
 
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
