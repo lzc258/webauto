@@ -16,7 +16,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 my_log.start_logging()
 
 INPUT_JSON = "data/event_backgrounds_questions.json"
-OUTPUT_JSON_WITHOUT = "data/event_backgrounds_answers/campaigns_answers"
+OUTPUT_JSON_WITHOUT = "data/event_backgrounds_answers/event_backgrouds_answers"
 WAIT_TIMEOUT = 120
 SLEEP_BETWEEN_QUESTIONS = 5
 BATCH_SIZE = 30
@@ -59,9 +59,10 @@ def send_question(question: str):
     input_box.send_keys(Keys.ENTER)
 
 
-def wait_for_answer(driver,timeout=120):
+def wait_for_answer(driver, timeout=120, stable_time=3):
     start = time.time()
     last_text = ""
+    last_change = time.time()
 
     while True:
         time.sleep(1)
@@ -76,13 +77,19 @@ def wait_for_answer(driver,timeout=120):
 
         current = answers[-1].text.strip()
 
-        if current and current == last_text:
+        # 内容变化了
+        if current != last_text:
+            last_text = current
+            last_change = time.time()
+
+        # 内容稳定了一段时间
+        if time.time() - last_change >= stable_time:
             return current
 
-        last_text = current
-
+        # 总超时兜底
         if time.time() - start > timeout:
             return current
+
 
 
 def new_chat():
