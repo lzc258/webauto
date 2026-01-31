@@ -19,7 +19,7 @@ INPUT_JSON = "data/event_backgrounds_questions.json"
 OUTPUT_JSON_WITHOUT = "data/event_backgrounds_answers/event_backgrouds_answers"
 WAIT_TIMEOUT = 120
 SLEEP_BETWEEN_QUESTIONS = 5
-BATCH_SIZE = 30
+BATCH_SIZE = 2
 NEW_CHAT_WAIT_TIME = 1
 NEW_PAGE_WAIT_TIME = 20
 driver = launch.get_driver(browser_config,is_handle_login=True)
@@ -59,13 +59,18 @@ def send_question(question: str):
     input_box.send_keys(Keys.ENTER)
 
 
-def wait_for_answer(driver, timeout=120, stable_time=3):
-    start = time.time()
+def wait_for_answer(
+    driver,
+    timeout=180,        # 总超时
+    stable_time=3,      # 内容稳定多久才算结束
+    poll_interval=1,  # 轮询间隔
+):
+    start_time = time.time()
     last_text = ""
-    last_change = time.time()
+    last_change_time = time.time()
 
     while True:
-        time.sleep(1)
+        time.sleep(poll_interval)
 
         answers = driver.find_elements(
             By.CSS_SELECTOR,
@@ -75,20 +80,45 @@ def wait_for_answer(driver, timeout=120, stable_time=3):
         if not answers:
             continue
 
-        current = answers[-1].text.strip()
+        # 强制滚动，避免虚拟 DOM 吃内容
+        try:
+            driver.execute_script(
+                "arguments[0].scrollIntoView({block:'end'});",
+                answers[-1]
+            )
+        except Exception:
+            pass
 
-        # 内容变化了
-        if current != last_text:
-            last_text = current
-            last_change = time.time()
+        # 拼接所有 assistant block
+        texts = []
+        for a in answers:
+            try:
+                t = driver.execute_script(
+                    "return arguments[0].innerText;",
+                    a
+                )
+                if t:
+                    texts.append(t.strip())
+            except Exception:
+                pass
 
-        # 内容稳定了一段时间
-        if time.time() - last_change >= stable_time:
-            return current
+        current_text = "\n\n".join(texts).strip()
+
+        # 内容变化
+        if current_text and current_text != last_text:
+            last_text = current_text
+            last_change_time = time.time()
+
+        # 稳定一段时间，认为完成
+        if time.time() - last_change_time >= stable_time:
+            # 再等一小下，防止 UI 尾帧
+            time.sleep(0.3)
+            return last_text
 
         # 总超时兜底
-        if time.time() - start > timeout:
-            return current
+        if time.time() - start_time > timeout:
+            return last_text
+
 
 
 
