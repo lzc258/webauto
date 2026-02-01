@@ -5,6 +5,7 @@ import browser.log as my_log
 from cfg.myconfig import browser_config
 import json
 import time
+import re
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -24,9 +25,12 @@ NEW_CHAT_WAIT_TIME = 1
 NEW_PAGE_WAIT_TIME = 20
 driver = launch.get_driver(browser_config,is_handle_login=True)
 
-# =========================
-# 页面操作函数
-# =========================
+
+
+def ends_with_content_reference(s: str) -> bool:
+    pattern = r'::contentReference\[oaicite:\d+\]\{index=\d+\}$'
+    return re.search(pattern, s) is not None
+
 def get_input_box():
     wait = WebDriverWait(driver, WAIT_TIMEOUT)
     # 等待左侧栏元素出现，保证页面加载完成
@@ -59,15 +63,17 @@ def send_question(question: str):
     input_box.send_keys(Keys.ENTER)
 
 
-def wait_for_answer(driver, timeout=180, stable_time=3, poll_interval=1):
+last_answer = ""
+def wait_for_answer(driver, timeout=180, stable_time=3, poll_interval=1,pre_wait=0.5):
     """
     等待 ChatGPT 当前回答完成
     返回：新增文本（绝不会重复）
     """
+    global last_answer
     start_time = time.time()
     last_change_time = time.time()
     last_text = ""
-
+    time.sleep(pre_wait)  # 提交后等待一会儿再开始检测
     while True:
         time.sleep(poll_interval)
 
@@ -102,10 +108,10 @@ def wait_for_answer(driver, timeout=180, stable_time=3, poll_interval=1):
         if current_text != last_text:
             last_text = current_text
             last_change_time = time.time()
-
         # 内容稳定，认为回答完成
         if time.time() - last_change_time >= stable_time:
-            if len(current_text) > 3:
+            if len(current_text) > 3 and current_text != last_answer and not ends_with_content_reference(current_text):
+                last_answer = current_text
                 return current_text
 
         # 超时兜底
